@@ -1,86 +1,89 @@
 import streamlit as st
 import pandas as pd
+import numpy as np
 import plotly.express as px
 import plotly.graph_objects as go
-import numpy as np
 
-# Generar datos ficticios para 20 jugadores
-n_jugadores = 20
-nombres = [
-    "Lamine Yamal", "Nico Williams", "Rodri", "Pedri", "Gavi", 
-    "Carvajal", "Le Normand", "Cucurella", "Dani Olmo", "Morata",
-    "Zubimendi", "Baena", "Ferran", "Oyarzabal", "Grimaldo", 
-    "Vivian", "Laporte", "Navas", "Merino", "Fabian"
-]
+# --- CONFIGURACIÓN ---
+st.set_page_config(page_title="Scouting Delanteros - CCAFYDE", layout="wide")
 
-posiciones = ["Extremo", "Extremo", "Medio", "Medio", "Medio", 
-              "Defensa", "Defensa", "Defensa", "Medio", "Delantero",
-              "Medio", "Medio", "Extremo", "Delantero", "Defensa",
-              "Defensa", "Defensa", "Defensa", "Medio", "Medio"]
+@st.cache_data
+def cargar_datos_delanteros():
+    # Lista de delanteros (mezcla de perfiles: ratones de área, tanques, móviles)
+    nombres = [
+        "A. Morata", "R. Lewandowski", "K. Mbappé", "E. Haaland", "H. Kane", 
+        "Lamine Yamal", "Vini Jr.", "Griezmann", "Julián Álvarez", "Iago Aspas",
+        "Artem Dovbyk", "Ante Budimir", "Alexander Sorloth", "Guruzeta", "Hugo Duro",
+        "En-Nesyri", "Gerard Moreno", "Samu Omorodion", "Isaac Romero", "Borja Mayoral"
+    ]
+    
+    # Perfiles simulados:
+    # xG: Peligro de gol | Toques_Area: Presencia | Sprints: Velocidad
+    data = {
+        "Nombre": nombres,
+        "Goles_xG": np.round(np.random.uniform(0.3, 0.95, len(nombres)), 2),
+        "Toques_Area": np.random.randint(4, 12, len(nombres)),
+        "Sprints": np.random.randint(15, 45, len(nombres)),
+        "Eficacia_%": np.random.randint(10, 30, len(nombres)), # % de tiros que son gol
+        "Km_Recorridos": np.round(np.random.uniform(8.0, 11.5, len(nombres)), 1)
+    }
+    return pd.DataFrame(data)
 
-data = {
-    "Nombre": nombres,
-    "Posicion": posiciones,
-    # Distancia entre 8 y 13 km
-    "Distancia_km": np.round(np.random.uniform(8.5, 12.8, n_jugadores), 2),
-    # Sprints entre 10 y 45
-    "Sprints": np.random.randint(10, 48, n_jugadores),
-    # % Pases éxito entre 70 y 95
-    "Pases_Exito": np.random.randint(70, 96, n_jugadores),
-    # RPE (Fatiga percibida) del 1 al 10
-    "RPE_Fatiga": np.random.randint(3, 10, n_jugadores),
-    # Goles esperados (xG)
-    "Goles_xG": np.round(np.random.uniform(0.0, 1.2, n_jugadores), 2)
-}
+df = cargar_datos_delanteros()
 
-df = pd.DataFrame(data)
+st.title("🎯 Especialista en Scouting: El '9' Ideal")
+st.write("Contexto: Eres el director deportivo y buscas un delantero. ¿Prefieres un rematador de área o uno que corra al espacio?")
 
-# Añadimos un "Outlier" (el caso trampa para la clase)
-# Un jugador que ha corrido poco pero está muertísimo (RPE 10)
-df.loc[df['Nombre'] == 'Morata', 'Distancia_km'] = 6.2
-df.loc[df['Nombre'] == 'Morata', 'RPE_Fatiga'] = 10
+tab1, tab2, tab3 = st.tabs(["👤 Perfil Individual", "⚡ Test de Velocidad", "⚽ Laboratorio de Goleadores"])
 
-st.set_page_config(layout="wide")
-st.title("🚀 Sport Data Lab: 1º CCAFYDE")
-
-tab1, tab2, tab3 = st.tabs(["👤 Perfil Individual", "📊 Comparativa Equipo", "🧠 Correlaciones Tácticas"])
-
-# --- TAB 1: RADAR CHART (ANÁLISIS 1 vs 1) ---
+# --- TAB 1: RADAR (ADN DEL DELANTERO) ---
 with tab1:
-    st.header("Análisis de Perfil de Jugador")
-    jugador = st.selectbox("Selecciona un jugador para ver su 'ADN':", df['Nombre'].unique())
-    
-    # Filtrar datos del jugador
-    datos_jugador = df[df['Nombre'] == jugador].iloc[0]
-    metrics = ['Sprints', 'Pases_Exito', 'Distancia_km', 'Goles_xG'] # Ejemplo
-    
-    fig_radar = go.Figure(data=go.Scatterpolar(
-      r=[datos_jugador[m] for m in metrics],
-      theta=metrics,
-      fill='toself'
-    ))
-    st.plotly_chart(fig_radar)
-
-# --- TAB 2: RANKING (ESTADO DEL EQUIPO) ---
-with tab2:
-    st.header("¿Quién destaca en el equipo?")
-    metrica_rank = st.selectbox("Elige qué quieres medir:", ["Sprints", "RPE_Fatiga", "Pases_Exito"])
-    
-    fig_bar = px.bar(df.sort_values(metrica_rank, ascending=False), 
-                     x='Nombre', y=metrica_rank, color='Posicion',
-                     title=f"Ranking de {metrica_rank}")
-    st.plotly_chart(fig_bar)
-
-# --- TAB 3: SCATTER (EL LABORATORIO) ---
-with tab3:
-    st.header("Laboratorio de Correlaciones")
-    col1, col2 = st.columns(2)
+    col1, col2 = st.columns([1, 2])
     with col1:
-        eje_x = st.selectbox("Métrica Física (Eje X)", ["Distancia_km", "Sprints"])
-    with col2:
-        eje_y = st.selectbox("Métrica Técnica (Eje Y)", ["Pases_Exito", "RPE_Fatiga", "Goles_xG"])
+        jugador = st.selectbox("Analiza a un delantero:", df['Nombre'].sort_values())
+        st.write("---")
+        st.markdown("""
+        **Guía de lectura:**
+        * **xG:** ¿Sabe desmarcarse bien?
+        * **Toques Área:** ¿Es un 'pivote' de área?
+        * **Sprints:** ¿Es una amenaza al contraataque?
+        """)
     
-    fig_scatter = px.scatter(df, x=eje_x, y=eje_y, color="Posicion", 
-                             hover_name="Nombre", size="Sprints", 
-                             trendline="ols") # Línea de tendencia para que vean si hay relación
-    st.plotly_chart(fig_scatter)
+    with col2:
+        vals = df[df['Nombre'] == jugador].iloc[0]
+        metrics = ['Goles_xG', 'Toques_Area', 'Sprints']
+        # Normalizamos un poco para que el radar se vea bien (rango 0-1)
+        r_values = [vals['Goles_xG']*50, vals['Toques_Area']*4, vals['Sprints']] 
+        
+        fig_radar = go.Figure(data=go.Scatterpolar(
+            r=r_values,
+            theta=['Peligro (xG)', 'Presencia (Área)', 'Velocidad (Sprints)'],
+            fill='toself',
+            line_color='red'
+        ))
+        fig_radar.update_layout(polar=dict(radialaxis=dict(visible=False, range=[0, 50])), showlegend=False)
+        st.plotly_chart(fig_radar, use_container_width=True)
+
+# --- TAB 2: RANKING ---
+with tab2:
+    st.header("Ranking: Capacidad de Repetición de Esfuerzos")
+    fig_bar = px.bar(df.sort_values("Sprints"), x='Sprints', y='Nombre', orientation='h', 
+                     color='Sprints', color_continuous_scale='OrRd')
+    st.plotly_chart(fig_bar, use_container_width=True)
+
+# --- TAB 3: SCATTER (DECISIÓN FINAL) ---
+with tab3:
+    st.header("¿Quién es el más eficiente?")
+    c1, c2 = st.columns(2)
+    with c1:
+        eje_x = st.selectbox("Eje X:", ["Toques_Area", "Km_Recorridos"])
+    with c2:
+        eje_y = st.selectbox("Eje Y:", ["Goles_xG", "Eficacia_%"])
+
+    fig_scatter = px.scatter(df, x=eje_x, y=eje_y, size="Sprints", color="Sprints",
+                             hover_name="Nombre", text="Nombre",
+                             color_continuous_scale='Viridis')
+    fig_scatter.update_traces(textposition='top center')
+    st.plotly_chart(fig_scatter, use_container_width=True)
+    
+    st.info("💡 CONSEJO: Busca a los que están arriba a la derecha. Tienen mucho volumen de juego y mucha calidad.")
