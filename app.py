@@ -8,6 +8,7 @@ import io
 
 # --- 1. CONFIGURACIÓN DE LA PÁGINA ---
 st.set_page_config(page_title="Football Analytics", layout="wide", page_icon="⚽")
+st.header("⚽Plataforma de Scouting⚽")
 
 # Diccionario maestro de métricas por posición
 METRICAS_MAP = {
@@ -19,50 +20,50 @@ METRICAS_MAP = {
     "Delantero": ["Remate", "Asistencias", "xG", "Velocidad"]
 }
 
-# --- 2. CARGA DE DATOS ---
+# --- 2. CARGA DE DATOS (EDAD Y VALOR AÑADIDOS - TALENTO NÓRDICO) ---
 @st.cache_data
 def load_data():
     jugadores = [
         # PORTEROS (M1: Paradas, M2: Pase, M3: Salida, M4: Reflejos)
-        {"Nombre": "Courtois", "Pos": "Portero", "M1": 85, "M2": 70, "M3": 80, "M4": 90, "x": 50, "y": 7},
-        {"Nombre": "Alisson", "Pos": "Portero", "M1": 86, "M2": 85, "M3": 88, "M4": 87, "x": 50, "y": 7},
-        {"Nombre": "Ter Stegen", "Pos": "Portero", "M1": 84, "M2": 89, "M3": 85, "M4": 86, "x": 50, "y": 7},
-        {"Nombre": "Ederson", "Pos": "Portero", "M1": 82, "M2": 93, "M3": 86, "M4": 80, "x": 50, "y": 7},
-
+        {"Nombre": "Lukas Hradecky", "Pos": "Portero", "M1": 86, "M2": 65, "M3": 78, "M4": 88, "Edad": 34, "Valor": 5},
+        {"Nombre": "Kasper Schmeichel", "Pos": "Portero", "M1": 81, "M2": 78, "M3": 70, "M4": 90, "Edad": 37, "Valor": 2},
+        {"Nombre": "Robin Olsen", "Pos": "Portero", "M1": 82, "M2": 60, "M3": 84, "M4": 79, "Edad": 34, "Valor": 1.5},
+        {"Nombre": "Mads Hermansen", "Pos": "Portero", "M1": 77, "M2": 92, "M3": 81, "M4": 80, "Edad": 23, "Valor": 9},
+        
         # DEFENSAS CENTRALES (M1: Intercepciones, M2: Duelos, M3: Pase, M4: Velocidad)
-        {"Nombre": "Militao", "Pos": "Defensa Central", "M1": 88, "M2": 85, "M3": 75, "M4": 82, "x": 55, "y": 25},
-        {"Nombre": "Van Dijk", "Pos": "Defensa Central", "M1": 90, "M2": 92, "M3": 78, "M4": 75, "x": 45, "y": 25},
-        {"Nombre": "Rüdiger", "Pos": "Defensa Central", "M1": 86, "M2": 89, "M3": 72, "M4": 84, "x": 65, "y": 25},
-        {"Nombre": "Araujo", "Pos": "Defensa Central", "M1": 85, "M2": 91, "M3": 68, "M4": 88, "x": 35, "y": 25},
-        {"Nombre": "Ruben Dias", "Pos": "Defensa Central", "M1": 89, "M2": 90, "M3": 82, "M4": 65, "x": 50, "y": 20},
-
+        {"Nombre": "Andreas Christensen", "Pos": "Defensa Central", "M1": 92, "M2": 80, "M3": 94, "M4": 72, "Edad": 27, "Valor": 40},
+        {"Nombre": "Joachim Andersen", "Pos": "Defensa Central", "M1": 84, "M2": 86, "M3": 91, "M4": 65, "Edad": 27, "Valor": 35},
+        {"Nombre": "Victor Lindelöf", "Pos": "Defensa Central", "M1": 85, "M2": 78, "M3": 88, "M4": 68, "Edad": 29, "Valor": 15},
+        {"Nombre": "Leo Östigard", "Pos": "Defensa Central", "M1": 78, "M2": 95, "M3": 65, "M4": 76, "Edad": 24, "Valor": 10},
+        {"Nombre": "Isak Hien", "Pos": "Defensa Central", "M1": 80, "M2": 90, "M3": 70, "M4": 86, "Edad": 25, "Valor": 20},
+        
         # LATERALES (M1: Velocidad, M2: Centros, M3: Duelos, M4: Pase)
-        {"Nombre": "Walker", "Pos": "Lateral", "M1": 95, "M2": 75, "M3": 82, "M4": 78, "x": 90, "y": 35},
-        {"Nombre": "Davies", "Pos": "Lateral", "M1": 96, "M2": 78, "M3": 75, "M4": 77, "x": 10, "y": 35},
-        {"Nombre": "Alexander-Arnold", "Pos": "Lateral", "M1": 78, "M2": 92, "M3": 72, "M4": 90, "x": 90, "y": 45},
-        {"Nombre": "Theo Hernandez", "Pos": "Lateral", "M1": 93, "M2": 82, "M3": 79, "M4": 81, "x": 10, "y": 45},
-
+        {"Nombre": "Alexander Bah", "Pos": "Lateral", "M1": 88, "M2": 84, "M3": 75, "M4": 80, "Edad": 26, "Valor": 30},
+        {"Nombre": "Julian Ryerson", "Pos": "Lateral", "M1": 80, "M2": 72, "M3": 92, "M4": 78, "Edad": 26, "Valor": 20},
+        {"Nombre": "Victor Kristiansen", "Pos": "Lateral", "M1": 82, "M2": 80, "M3": 85, "M4": 74, "Edad": 21, "Valor": 15},
+        {"Nombre": "Emil Krafth", "Pos": "Lateral", "M1": 75, "M2": 70, "M3": 82, "M4": 76, "Edad": 29, "Valor": 3},
+        
         # MEDIOCENTROS (M1: Pases Clave, M2: Vision, M3: Resistencia, M4: Regate)
-        {"Nombre": "Modric", "Pos": "Mediocentro", "M1": 92, "M2": 95, "M3": 80, "M4": 88, "x": 35, "y": 60},
-        {"Nombre": "Rodri", "Pos": "Mediocentro", "M1": 88, "M2": 90, "M3": 92, "M4": 78, "x": 50, "y": 45},
-        {"Nombre": "De Bruyne", "Pos": "Mediocentro", "M1": 95, "M2": 98, "M3": 85, "M4": 82, "x": 65, "y": 60},
-        {"Nombre": "Pedri", "Pos": "Mediocentro", "M1": 90, "M2": 94, "M3": 88, "M4": 91, "x": 30, "y": 55},
-        {"Nombre": "Bellingham", "Pos": "Mediocentro", "M1": 85, "M2": 87, "M3": 93, "M4": 88, "x": 50, "y": 65},
-        {"Nombre": "Bernardo Silva", "Pos": "Mediocentro", "M1": 91, "M2": 92, "M3": 95, "M4": 92, "x": 70, "y": 55},
-
+        {"Nombre": "Martin Ødegaard", "Pos": "Mediocentro", "M1": 98, "M2": 99, "M3": 82, "M4": 90, "Edad": 25, "Valor": 110},
+        {"Nombre": "Pierre-Emile Højbjerg", "Pos": "Mediocentro", "M1": 74, "M2": 78, "M3": 96, "M4": 68, "Edad": 28, "Valor": 20},
+        {"Nombre": "Christian Eriksen", "Pos": "Mediocentro", "M1": 94, "M2": 96, "M3": 62, "M4": 80, "Edad": 32, "Valor": 8},
+        {"Nombre": "Hugo Larsson", "Pos": "Mediocentro", "M1": 80, "M2": 82, "M3": 90, "M4": 84, "Edad": 19, "Valor": 28},
+        {"Nombre": "Morten Hjulmand", "Pos": "Mediocentro", "M1": 72, "M2": 76, "M3": 94, "M4": 70, "Edad": 24, "Valor": 40},
+        {"Nombre": "Sander Berge", "Pos": "Mediocentro", "M1": 78, "M2": 80, "M3": 88, "M4": 75, "Edad": 26, "Valor": 20},
+        
         # EXTREMOS (M1: Regate, M2: Velocidad, M3: Goles, M4: Centros)
-        {"Nombre": "Vinicius", "Pos": "Extremo", "M1": 95, "M2": 97, "M3": 85, "M4": 82, "x": 20, "y": 80},
-        {"Nombre": "Salah", "Pos": "Extremo", "M1": 88, "M2": 89, "M3": 92, "M4": 84, "x": 80, "y": 80},
-        {"Nombre": "Mbappé", "Pos": "Extremo", "M1": 92, "M2": 97, "M3": 94, "M4": 80, "x": 15, "y": 85},
-        {"Nombre": "Saka", "Pos": "Extremo", "M1": 89, "M2": 86, "M3": 84, "M4": 88, "x": 85, "y": 75},
-        {"Nombre": "Leao", "Pos": "Extremo", "M1": 91, "M2": 93, "M3": 80, "M4": 78, "x": 15, "y": 75},
+        {"Nombre": "Dejan Kulusevski", "Pos": "Extremo", "M1": 92, "M2": 82, "M3": 80, "M4": 89, "Edad": 23, "Valor": 55},
+        {"Nombre": "Anthony Elanga", "Pos": "Extremo", "M1": 84, "M2": 96, "M3": 75, "M4": 72, "Edad": 21, "Valor": 25},
+        {"Nombre": "Oscar Bobb", "Pos": "Extremo", "M1": 94, "M2": 84, "M3": 72, "M4": 85, "Edad": 20, "Valor": 25},
+        {"Nombre": "Antonio Nusa", "Pos": "Extremo", "M1": 96, "M2": 91, "M3": 70, "M4": 74, "Edad": 18, "Valor": 17},
+        {"Nombre": "Gustav Isaksen", "Pos": "Extremo", "M1": 88, "M2": 90, "M3": 76, "M4": 78, "Edad": 22, "Valor": 12},
 
         # DELANTEROS (M1: Remate, M2: Asistencias, M3: xG, M4: Velocidad)
-        {"Nombre": "Benzema", "Pos": "Delantero", "M1": 94, "M2": 88, "M3": 85, "M4": 78, "x": 45, "y": 85},
-        {"Nombre": "Haaland", "Pos": "Delantero", "M1": 96, "M2": 65, "M3": 98, "M4": 90, "x": 50, "y": 92},
-        {"Nombre": "Kane", "Pos": "Delantero", "M1": 93, "M2": 85, "M3": 88, "M4": 75, "x": 55, "y": 88},
-        {"Nombre": "Lewandowski", "Pos": "Delantero", "M1": 91, "M2": 75, "M3": 85, "M4": 72, "x": 50, "y": 85},
-        {"Nombre": "Lautaro Martinez", "Pos": "Delantero", "M1": 89, "M2": 78, "M3": 82, "M4": 83, "x": 40, "y": 88},
+        {"Nombre": "Erling Haaland", "Pos": "Delantero", "M1": 99, "M2": 62, "M3": 98, "M4": 95, "Edad": 23, "Valor": 180},
+        {"Nombre": "Alexander Isak", "Pos": "Delantero", "M1": 90, "M2": 84, "M3": 88, "M4": 92, "Edad": 24, "Valor": 75},
+        {"Nombre": "Rasmus Højlund", "Pos": "Delantero", "M1": 86, "M2": 68, "M3": 91, "M4": 93, "Edad": 21, "Valor": 65},
+        {"Nombre": "Viktor Gyökeres", "Pos": "Delantero", "M1": 94, "M2": 78, "M3": 95, "M4": 87, "Edad": 25, "Valor": 70},
+        {"Nombre": "Jonas Wind", "Pos": "Delantero", "M1": 82, "M2": 88, "M3": 80, "M4": 65, "Edad": 25, "Valor": 25},
     ]
     df_raw = pd.DataFrame(jugadores)
     # Cálculo de Rating ponderado (40% principal, 20% el resto)
@@ -149,11 +150,11 @@ def generar_pdf(avg, atk, dfn, notas):
     return pdf.output(dest='S').encode('latin-1')
 
 # --- 4. INTERFAZ STREAMLIT ---
-tab1, tab2, tab3 = st.tabs(["Individual", "Comparador 1vs1", "Tu Alineación"])
+tab1, tab2, tab3, tab4 = st.tabs(["Individual", "Comparador 1vs1", "Rentabilidad", "Tu Alineación"])
 
 # --- TAB 1 y 2 (Se mantienen igual) ---
 with tab1:
-    st.header("Análisis por Posición")
+    st.header("📚 Análisis por Posición")
     pos_selected = st.selectbox("Selecciona una posición", list(METRICAS_MAP.keys()))
     filtered_df = df[df["Pos"] == pos_selected].sort_values("Rating", ascending=False).copy()
     nombres_reales = METRICAS_MAP[pos_selected]
@@ -162,15 +163,14 @@ with tab1:
     with col1:
         st.dataframe(filtered_df[["Nombre", "Rating", "M1", "M2", "M3", "M4"]].rename(columns=mapeo_columnas), hide_index=True)
     with col2:
-        st.plotly_chart(px.bar(filtered_df, x="Nombre", y="Rating", color="Rating", color_continuous_scale="Greens"), use_container_width=True)
+        fig = px.bar(filtered_df, x="Nombre", y="Rating", color="Rating", color_continuous_scale="RdYlGn")
+        fig.update_yaxes(range=[50, 95])
+        st.plotly_chart(fig, use_container_width=True)
 
 with tab2:
-    st.header("Cara a Cara (Análisis Comparativo)")
+    st.header("‼️ Cara a Cara")
     
-    # 1. Filtro de posición para que la comparación sea justa
     pos_comp = st.selectbox("Selecciona posición para comparar", list(METRICAS_MAP.keys()), key="comp_pos_tab2")
-    
-    # 2. Filtrar jugadores por esa posición
     opciones_comparar = df[df["Pos"] == pos_comp]["Nombre"].unique()
     
     if len(opciones_comparar) >= 2:
@@ -178,27 +178,31 @@ with tab2:
         p1 = c1.selectbox("Jugador A", opciones_comparar, index=0)
         p2 = c2.selectbox("Jugador B", opciones_comparar, index=1)
 
-        # Extraer datos de los jugadores seleccionados
         p1_data = df[df["Nombre"] == p1].iloc[0]
         p2_data = df[df["Nombre"] == p2].iloc[0]
+        
+        # 1. PREPARAR MÉTRICAS (Cerramos el círculo repitiendo el primer valor)
         labels = METRICAS_MAP[pos_comp]
+        # Añadimos el primer elemento al final para que el radar se cierre visualmente
+        labels_radar = labels + [labels[0]]
+        
+        stats_p1 = [p1_data['M1'], p1_data['M2'], p1_data['M3'], p1_data['M4'], p1_data['M1']]
+        stats_p2 = [p2_data['M1'], p2_data['M2'], p2_data['M3'], p2_data['M4'], p2_data['M1']]
 
         # --- GRÁFICO DE RADAR ---
         fig_radar = go.Figure()
 
-        # Jugador A
         fig_radar.add_trace(go.Scatterpolar(
-            r=[p1_data['M1'], p1_data['M2'], p1_data['M3'], p1_data['M4']],
-            theta=labels,
+            r=stats_p1,
+            theta=labels_radar, # Usamos las etiquetas con el cierre
             fill='toself',
             name=p1,
             line_color="#00FF00"
         ))
 
-        # Jugador B
         fig_radar.add_trace(go.Scatterpolar(
-            r=[p2_data['M1'], p2_data['M2'], p2_data['M3'], p2_data['M4']],
-            theta=labels,
+            r=stats_p2,
+            theta=labels_radar, # Usamos las etiquetas con el cierre
             fill='toself',
             name=p2,
             line_color="#FF4B4B"
@@ -206,13 +210,21 @@ with tab2:
 
         fig_radar.update_layout(
             polar=dict(
-                radialaxis=dict(visible=True, range=[0, 100], tickfont=dict(size=10)),
-                angularaxis=dict(tickfont=dict(size=12, color="white"))
+                radialaxis=dict(
+                    visible=True, 
+                    range=[0, 100], 
+                    tickfont=dict(size=10, color="gray") # Color de los números del eje
+                ),
+                angularaxis=dict(
+                    tickfont=dict(size=14, color="white"), # 2. COLOR DE LAS MÉTRICAS
+                    rotation=90, # Rotamos para que la primera métrica esté arriba
+                    direction="clockwise"
+                )
             ),
             showlegend=True,
             paper_bgcolor="rgba(0,0,0,0)",
             plot_bgcolor="rgba(0,0,0,0)",
-            height=450
+            height=500
         )
 
         st.plotly_chart(fig_radar, use_container_width=True)
@@ -229,9 +241,60 @@ with tab2:
     else:
         st.warning(f"No hay suficientes jugadores en la posición '{pos_comp}' para realizar una comparación.")
 
-# --- TAB 3: PLANTILLA (NUEVA LÓGICA DE SELECCIÓN POR ZONA) ---
-with tab3:
-    st.header("📍 Configuración del Once")
+# --- TAB 3: PROYECCIÓN DE FUTURO Y VALOR DE MERCADO RELACIONADO CON APTITUDES - SCATTER PLOT ---
+with tab3: 
+    st.header("🔍 Radar de Mercado y Proyección")
+
+    col_f1, col_f2 = st.columns(2)
+    
+    with col_f1:
+        f_edad = st.slider("Rango Edad", 15, 40, (15, 30))
+
+    with col_f2:
+        presupuesto_max = st.slider("Presupuesto Máximo (M€)", 0, 200, 200)
+        
+    df_m = df[(df["Valor"] <= presupuesto_max) & (df["Edad"].between(f_edad[0], f_edad[1]))].copy()
+    
+    # Evitar error si el dataframe filtrado está vacío
+    if not df_m.empty:
+        fig_m = px.scatter(
+            df_m, 
+            x="Edad", 
+            y="Rating", 
+            size="Valor", 
+            color="Pos",
+            hover_name="Nombre", 
+            text="Nombre",
+            labels={"Rating": "Rating General", "Edad": "Edad", "Pos": "Posición", "Valor": "Precio (M€)"},
+            height=600, 
+            template="plotly_dark"
+        )
+        
+        fig_m.add_vline(x=24, line_dash="dash", line_color="orange", annotation_text="Pico de Proyección")
+        
+        # Ajuste estético para que los nombres no se pisen
+        fig_m.update_traces(textposition='top center')
+        
+        st.plotly_chart(fig_m, use_container_width=True)
+        
+        st.subheader("💰 Análisis de Rentabilidad (Rating/Precio)")
+        
+        # 3. CÁLCULO DE RENTABILIDAD
+        # Usamos .loc para evitar el SettingWithCopyWarning
+        df_m["Rentabilidad"] = (df_m["Rating"] / df_m["Valor"]).round(2)
+        
+        st.dataframe(
+            df_m[["Nombre", "Pos", "Edad", "Rating", "Valor", "Rentabilidad"]]
+            .sort_values("Rentabilidad", ascending=False), 
+            hide_index=True,
+            use_container_width=True
+        )
+    else:
+        st.warning("No hay jugadores que coincidan con esos filtros. ¡Sube el presupuesto o amplia el rango de edad!")
+
+# --- TAB 4: PLANTILLA (NUEVA LÓGICA DE SELECCIÓN POR ZONA) ---
+with tab4:
+    st.header("📍 ¿Qué jugadores quieres en tu plantilla?")
     c_sel, c_map = st.columns([1, 2])
     
     with c_sel:
