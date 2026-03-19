@@ -251,7 +251,7 @@ with tab3:
         f_edad = st.slider("Rango Edad", 15, 40, (15, 30))
 
     with col_f2:
-        presupuesto_max = st.slider("Presupuesto Máximo (M€)", 0, 200, 200)
+        presupuesto_max = st.slider("Presupuesto Máximo (M€)", 0, 300, 300)
         
     df_m = df[(df["Valor"] <= presupuesto_max) & (df["Edad"].between(f_edad[0], f_edad[1]))].copy()
     
